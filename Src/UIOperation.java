@@ -1,13 +1,13 @@
 package operation;
 import java.util.Properties;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-
+import com.relevantcodes.extentreports.LogStatus;
 import excelExportAndFileIO.ExcelUtils;
+import Base.Base;
 
-public class UIOperation {
+public class UIOperation extends Base {
 	WebDriver driver;
     public UIOperation(WebDriver driver){
         this.driver = driver;
@@ -18,15 +18,18 @@ public class UIOperation {
         case "CLICK":
             //Perform click
             driver.findElement(this.getObject(p,objectName,objectType)).click();
+            logger.log(LogStatus.INFO,"Click "+objectName);
             break;
         case "SETTEXT":
             //Set text on control
             driver.findElement(this.getObject(p,objectName,objectType)).sendKeys(value);
+            logger.log(LogStatus.INFO,"Enter Text "+value);
             break;
           
         case "GOTOURL":
             //Get url of application
             driver.get(p.getProperty(value));
+            logger.log(LogStatus.INFO,"Open URL "+value);
             ExcelUtils.writeExcel(System.getProperty("user.dir")+"\\TestCase.xlsx","Home",5,1,"PASS");
             break;
         case "GETTEXT":
