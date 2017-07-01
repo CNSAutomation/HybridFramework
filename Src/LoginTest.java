@@ -1,41 +1,38 @@
 package testCases;
 
+import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
 import operation.ReadObject;
 import operation.UIOperation;
-
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.relevantcodes.extentreports.LogStatus;
+
+import Utility.TestListener;
 import excelExportAndFileIO.ExcelUtils;
+import Base.Base;
 
-
-public class LoginTest 
+public class LoginTest extends Base
 {
 	 private String sTestCaseName;
 	 
 	 private int iTestCaseRow;
-	 public static WebDriver webdriver = null;
-	 @BeforeTest
-	 
-	    public void beforeMethod() throws Exception {
-		 
-		 System.setProperty("webdriver.gecko.driver","C:\\BrowserDriver\\geckodriver-v0.13.0-win64\\geckodriver.exe");
-         webdriver=new FirefoxDriver();
-
-	//	 webdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
-		// webdriver.get("http://www.store.demoqa.com");	 
-
-		}
+//	 public static WebDriver webdriver = null;
+//	 @BeforeTest
+//	 
+//	    public void beforeMethod() throws Exception {
+//		 
+//		 System.setProperty("webdriver.gecko.driver","C:\\BrowserDriver\\geckodriver-v0.13.0-win64\\geckodriver.exe");
+//         webdriver=new FirefoxDriver();
+//
+//	//	 webdriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+//
+//		// webdriver.get("http://www.store.demoqa.com");	 
+//
+//		}
 	    
 //	 @DataProvider(name="hybridData")
 //	 public Object[][] getDataFromDataprovider() throws IOException
@@ -91,26 +88,25 @@ public class LoginTest
      @Test(dataProvider="Home")
     public void Login(String keyword,String objectName,String objectType,String value) throws Exception {
         // TODO Auto-generated method stub
-     // System.out.println("Test Case Name : "+testcaseName);
-      System.out.println("keyword : "+keyword);
-      System.out.println("objectName : "+objectName);
-      System.out.println("objectType : "+objectType);
+    	 logger = report.startTest("Login TestCase Started");
     
 		ReadObject object = new ReadObject();
 		Properties allObjects = object.getObjectRepository();
 		UIOperation operation = new UIOperation(webdriver);
 		    //Call perform function to perform operation on UI
 		operation.perform(allObjects, keyword, objectName,objectType, value);
-	//	ExcelUtils.writeExcel(System.getProperty("user.dir")+"\\TestCase.xlsx","Home",5,2,"PASS");
-	//	ExcelUtils.writeExcel(System.getProperty("user.dir")+"\\TestCase.xlsx","Home",5,3,"PASS");
+		
     }
-    
-     @AfterTest
-     
-     public void afterMethod() {
-  
-    	 webdriver.quit();
-  
-     	}
-
+     @AfterMethod
+		public void onTestFailure(ITestResult testResult) throws IOException {
+		  if(testResult.getStatus() == ITestResult.FAILURE){
+			  System.out.println(testResult.getStatus());
+			  TestListener testListener = new TestListener();
+			  testListener.onTestFailure(testResult);
+		  }
+		  if(testResult.getStatus() == ITestResult.SUCCESS)
+		  {
+			  logger.log(LogStatus.PASS,testResult.getName().toString().trim());
+		  }
+     }
 }
